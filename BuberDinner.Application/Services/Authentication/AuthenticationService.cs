@@ -1,39 +1,58 @@
 using BuberDinner.Application.Common.InterFaces.Authentication;
+using BuberDinner.Application.Common.InterFaces.Presistence;
+using BuberDinner.Domain.Entites;
 
 namespace BuberDinner.Application.Authentication
 {
- public class AuthenticationService(IJwtTokenGenerator jwtTokenGenerator) : IAuthenticationService
+ public class AuthenticationService(IJwtTokenGenerator jwtTokenGenerator, IUserRepository _userRepository) : IAuthenticationService
  {
     
 
   public AuthenticationResult Login(string email, string password)
         {
-            // Here you would typically validate the user's credentials against a database
-            // and generate a JWT token or similar for authentication.
-            // For now, we will return a dummy AuthenticationResult.
-
-            return new AuthenticationResult(
-                Id: Guid.NewGuid(),
-                FirstName: "John",
-                LastName: "Doe",
-                Email: email,
-                Token: "dummy-jwt-token"
-            );
+            // Check if the user exists
+           if( _userRepository.GetUserByEmail(email) is  not  User user)
+            {
+                throw new ArgumentException($"User with email {email} does not exist.");
+            }
+            // Validate the password is correct
+            if(user.Password != password)
+            {
+                throw new ArgumentException("Invalid password.");
+            }
+            // Here you would typically generate a JWT token or similar for authentication.
+            var token = jwtTokenGenerator.GenerateToken(user);    
+            
+             return new AuthenticationResult(
+             user,
+        token
+          );
         }
 
   public AuthenticationResult Register(string firstName, string lastName, string email, string password)
   {
+   if(_userRepository.GetUserByEmail(email) is not null )
+    {
+            throw new ArgumentException($"User with email {email} already exists.");        
+    }
+            var user = new  User
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                Password = password // In a real application, you should hash the password
+            };
+
+            _userRepository.AddUser(user);  
+
             // Here you would typically create a new user in the database
             // and generate a JWT token or similar for authentication.
             // For now, we will return a dummy AuthenticationResult.
-   var userId = Guid.NewGuid();
-var token = jwtTokenGenerator.GenerateToken(userId, firstName, lastName);   
+            
+var token = jwtTokenGenerator.GenerateToken(user);   
    return new AuthenticationResult(
-       Id: userId,
-       FirstName: firstName,
-       LastName: lastName,
-       Email: email,
-       Token: token
+    user,
+        token
    );
   }
  }

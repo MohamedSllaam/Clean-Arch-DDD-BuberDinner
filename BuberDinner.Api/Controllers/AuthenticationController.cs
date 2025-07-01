@@ -27,10 +27,10 @@ namespace BuberDinner.Api.Controllers;
             request.Email,
             request.Password);
         var response = new AuthenticationResponse(
-            authenticationResult.Id,
-            authenticationResult.FirstName,
-            authenticationResult.LastName,
-            authenticationResult.Email,
+            authenticationResult.User.Id,
+            authenticationResult.User.FirstName,
+            authenticationResult.User.LastName,
+            authenticationResult.User.Email,
             authenticationResult.Token
         );
         // Registration logic goes here
@@ -45,13 +45,13 @@ namespace BuberDinner.Api.Controllers;
         var authenticationResult = authenticationService.Login(
             request.Email, request.Password);
         var response = new AuthenticationResponse(
-            authenticationResult.Id,
-            authenticationResult.FirstName,
-            authenticationResult.LastName,
-            authenticationResult.Email,
+            authenticationResult.User.Id,
+            authenticationResult.User.FirstName,
+            authenticationResult.User.LastName,
+            authenticationResult.User.Email,
             authenticationResult.Token
         );  
         // Login logic goes here
-        return Ok(request);
+        return Ok(response);
     }
 }
