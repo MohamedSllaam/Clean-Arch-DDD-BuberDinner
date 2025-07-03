@@ -9,16 +9,15 @@ namespace BuberDinner.Api.Filters
         public override void OnException(ExceptionContext context)
         {
             var exception = context.Exception;
-            context.Result = new ObjectResult(new
+
+            var problemDetails = new ProblemDetails
             {
-                error = "An error occurred while processing your request.",
-                message = exception.Message,
-                stackTrace = exception.StackTrace
-            })
-            {
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                ContentTypes = { "application/json" }
+                Title = "An error occurred while processing your request.",
+                Detail = exception.Message,
+                Status = (int)HttpStatusCode.InternalServerError,
+                Instance = context.HttpContext.Request.Path
             };
+            context.Result = new ObjectResult(problemDetails);
             context.ExceptionHandled = true;
         }
     }
