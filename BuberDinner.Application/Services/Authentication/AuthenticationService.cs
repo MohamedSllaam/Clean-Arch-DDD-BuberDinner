@@ -1,6 +1,8 @@
+using BuberDinner.Application.Common.Errors;
 using BuberDinner.Application.Common.InterFaces.Authentication;
 using BuberDinner.Application.Common.InterFaces.Presistence;
 using BuberDinner.Domain.Entites;
+using OneOf;
 
 namespace BuberDinner.Application.Authentication
 {
@@ -29,12 +31,14 @@ namespace BuberDinner.Application.Authentication
           );
         }
 
-  public AuthenticationResult Register(string firstName, string lastName, string email, string password)
+  public OneOf< AuthenticationResult, DuplicateEmailError> Register(string firstName, string lastName, string email, string password)
   {
-   if(_userRepository.GetUserByEmail(email) is not null )
-    {
-            throw new ArgumentException($"User with email {email} already exists.");        
-    }
+            if (_userRepository.GetUserByEmail(email) is not null)
+            {
+                // throw new DuplicateEmailException();
+                // throw new ArgumentException($"User with email {email} already exists.");        
+              return new DuplicateEmailError();
+            }
             var user = new  User
             {
                 FirstName = firstName,
