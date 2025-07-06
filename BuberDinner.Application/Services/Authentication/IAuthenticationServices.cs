@@ -1,16 +1,23 @@
- using FluentResults;
+using ErrorOr;
+using FluentResults;
  
 namespace BuberDinner.Application.Authentication
 {
     public interface IAuthenticationService
     {
-        Result<AuthenticationResult> Register(
+        // Result<AuthenticationResult> Register(
+        //       string firstName,
+        //       string lastName,
+        //       string email,
+        //       string password);
+
+
+        ErrorOr<AuthenticationResult> Register(
               string firstName,
               string lastName,
               string email,
               string password);
-
-        AuthenticationResult Login(
+        ErrorOr<AuthenticationResult> Login(
             string email,
             string password);
 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -103,6 +104,13 @@ namespace BuberDinner.Api.Errors
         
            problemDetails.Extensions.Add("customProperty", "customValue");
 
+         var errors= httpContext?.Items["errors"] as List<Error>;
+
+            if (errors != null && errors.Count > 0)
+            {
+            problemDetails.Extensions["errors"] = errors.Select(x=> x.Code);
+            }
+        
             if (httpContext?.Request != null)
             {
                 problemDetails.Extensions["requestMethod"] = httpContext.Request.Method;

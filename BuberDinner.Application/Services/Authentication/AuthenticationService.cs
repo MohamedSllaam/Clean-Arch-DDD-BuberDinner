@@ -1,7 +1,8 @@
-using BuberDinner.Application.Common.Errors;
+using BuberDinner.Domain.Common.Errors;
 using BuberDinner.Application.Common.InterFaces.Authentication;
 using BuberDinner.Application.Common.InterFaces.Presistence;
 using BuberDinner.Domain.Entites;
+using ErrorOr;
 using FluentResults;
 
 
@@ -11,17 +12,20 @@ namespace BuberDinner.Application.Authentication
  {
     
 
-  public AuthenticationResult Login(string email, string password)
+  public ErrorOr<AuthenticationResult> Login(string email, string password)
         {
             // Check if the user exists
-           if( _userRepository.GetUserByEmail(email) is  not  User user)
+            if (_userRepository.GetUserByEmail(email) is not User user)
             {
-                throw new ArgumentException($"User with email {email} does not exist.");
+                return Errors.Authentication.InvalidCredentials;
+                // Alternatively, you could throw an exception or return a specific error.;
+             //   throw new ArgumentException($"User with email {email} does not exist.");
             }
             // Validate the password is correct
-            if(user.Password != password)
+            if (user.Password != password)
             {
-                throw new ArgumentException("Invalid password.");
+                return new[] { Errors.Authentication.InvalidCredentials };
+              //  throw new ArgumentException("Invalid password.");
             }
             // Here you would typically generate a JWT token or similar for authentication.
             var token = jwtTokenGenerator.GenerateToken(user);    
@@ -32,15 +36,16 @@ namespace BuberDinner.Application.Authentication
           );
         }
 
-  public Result<AuthenticationResult> Register(string firstName, string lastName, string email, string password)
+  public ErrorOr<AuthenticationResult> Register(string firstName, string lastName, string email, string password)
   {
             if (_userRepository.GetUserByEmail(email) is not null)
             {
                 // throw new DuplicateEmailException();
                 // throw new ArgumentException($"User with email {email} already exists.");        
                 //    return new DuplicateEmailError();
-  
-                return Result.Fail<AuthenticationResult>(new[] { new DuplicateEmailError() });  
+
+                //   return Result.Fail<AuthenticationResult>(new[] { new DuplicateEmailError() });  
+              return  Errors.User.DuplicateEmail;
             }
             var user = new  User
             {

@@ -1,16 +1,15 @@
 using BuberDinner.Api.Filters;
 using BuberDinner.Application.Authentication;
-using BuberDinner.Application.Common.Errors;
 using BuberDinner.Contracts.Authentication;
+using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace BuberDinner.Api.Controllers;
 
-[ApiController]
 [Route("auth")]
 //[ErrorHandlingExceptionFilter]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : ApiController
 {
     private readonly IAuthenticationService authenticationService;
 
@@ -25,26 +24,30 @@ public class AuthenticationController : ControllerBase
     public IActionResult Register(
          RegisterRequest request)
     {
-        var authenticationResult = authenticationService.Register(
+        ErrorOr<AuthenticationResult>  authenticationResult = authenticationService.Register(
              request.FirstName,
              request.LastName,
              request.Email,
              request.Password);
 
-
-        if (authenticationResult.IsSuccess)
-        {
-            var response = MapAuthResult(authenticationResult.Value);
-            return Ok(response);
-        }
-        var error = authenticationResult.Errors.FirstOrDefault();
-        if (error is DuplicateEmailError)
-        {
-            return Problem(
-                statusCode: StatusCodes.Status409Conflict,
-                title: "Email already exists");
-        }
-        return Problem();
+return authenticationResult.MatchFirst(
+            result => Ok(MapAuthResult(result)),
+             firtError => Problem(statusCode: StatusCodes.Status409Conflict, 
+                     title: firtError.Description)
+        );
+        // if (authenticationResult.IsSuccess)
+        // {
+        //     var response = MapAuthResult(authenticationResult.Value);
+        //     return Ok(response);
+        // }
+        // var error = authenticationResult.Errors.FirstOrDefault();
+        // if (error is DuplicateEmailError)
+        // {
+        //     return Problem(
+        //         statusCode: StatusCodes.Status409Conflict,
+        //         title: "Email already exists");
+        // }
+        // return Problem();
     // return authenticationResult.Match(
         //     result => Ok(MapAuthResult(result)),
         //     error => Problem(statusCode: (int)error.StatusCode, 
@@ -60,15 +63,21 @@ public class AuthenticationController : ControllerBase
     {
         var authenticationResult = authenticationService.Login(
             request.Email, request.Password);
-        var response = new AuthenticationResponse(
-            authenticationResult.User.Id,
-            authenticationResult.User.FirstName,
-            authenticationResult.User.LastName,
-            authenticationResult.User.Email,
-            authenticationResult.Token
+            
+if(authenticationResult.IsError && authenticationResult.FirstError== Domain.Common.Errors.Errors.Authentication.InvalidCredentials)  
+        {
+            
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: authenticationResult.FirstError.Description);  
+        }
+
+        return authenticationResult.Match(
+            result => Ok(MapAuthResult(result)),
+            errors => Problem(errors)
         );
         // Login logic goes here
-        return Ok(response);
+        
     }
     
 
