@@ -1,6 +1,6 @@
 using ErrorOr;
 using FluentResults;
- 
+ using BuberDinner.Application.Authentication.Common;
 namespace BuberDinner.Application.Authentication
 {
     public interface IAuthenticationService
