@@ -6,6 +6,7 @@ using BuberDinner.Application.Authentication.Common;
 using BuberDinner.Application.Authentication.Queries.Login;
 using BuberDinner.Contracts.Authentication;
 using ErrorOr;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,26 +18,24 @@ namespace BuberDinner.Api.Controllers;
 public class AuthenticationController : ApiController
 {
  private readonly ISender mediator;
+ private readonly IMapper _mapper;
 
- public AuthenticationController(ISender mediator)
+
+ public AuthenticationController(ISender mediator , IMapper mapper )
     {
    this.mediator = mediator;
-    }
+    _mapper = mapper;
+ }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(
          RegisterRequest request)
     {
-        var command = new RegisterCommand(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Password
-        );
+        var command =  _mapper.Map<RegisterCommand>(request);
         ErrorOr<AuthenticationResult>  authenticationResult = await mediator.Send(command);
 
 return authenticationResult.MatchFirst(
-            result => Ok(MapAuthResult(result)),
+            result => Ok(_mapper.Map<AuthenticationResponse>(result)),
              firtError => Problem(statusCode: StatusCodes.Status409Conflict, 
                      title: firtError.Description)
         );
@@ -65,9 +64,13 @@ return authenticationResult.MatchFirst(
     public async Task<IActionResult> Login(
       LoginRequest request)
     {
-        var query = new LoginQuery(
-           request.Email,
-           request.Password);
+        var query = _mapper.Map<LoginQuery>(request);
+        // var query = new LoginQuery(
+        //     request.Email, request.Password);
+        
+        // var authenticationService = new AuthenticationService();
+        // var authenticationResult = await authenticationService.LoginAsync(
+        //     request.Email, request.Password);
 var authenticationResult =  await mediator.Send(query);
         // var authenticationResult = authenticationService.Login(
         //     request.Email, request.Password);
@@ -81,7 +84,7 @@ if(authenticationResult.IsError && authenticationResult.FirstError== Domain.Comm
         }
 
         return authenticationResult.Match(
-            result => Ok(MapAuthResult(result)),
+            result => Ok(_mapper.Map<AuthenticationResponse>(result)),
             errors => Problem(errors)
         );
         // Login logic goes here
@@ -89,14 +92,14 @@ if(authenticationResult.IsError && authenticationResult.FirstError== Domain.Comm
     }
     
 
- private static AuthenticationResponse MapAuthResult(AuthenticationResult result)
-    {
-        return new AuthenticationResponse(
-            result.User.Id,
-            result.User.FirstName,
-            result.User.LastName,
-            result.User.Email,
-            result.Token
-        );
-    }
+//  private static AuthenticationResponse MapAuthResult(AuthenticationResult result)
+//     {
+//         return new AuthenticationResponse(
+//             result.User.Id,
+//             result.User.FirstName,
+//             result.User.LastName,
+//             result.User.Email,
+//             result.Token
+//         );
+//     }
 }
