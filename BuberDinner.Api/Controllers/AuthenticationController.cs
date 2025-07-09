@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using BuberDinner.Api.Filters;
 using BuberDinner.Application.Authentication;
-using BuberDinner.Application.Authentication.Commands;
+using BuberDinner.Application.Authentication.Commands.Register;
 using BuberDinner.Application.Authentication.Common;
 using BuberDinner.Application.Authentication.Queries.Login;
 using BuberDinner.Contracts.Authentication;
@@ -31,13 +31,17 @@ public class AuthenticationController : ApiController
     public async Task<IActionResult> Register(
          RegisterRequest request)
     {
-        var command =  _mapper.Map<RegisterCommand>(request);
-        ErrorOr<AuthenticationResult>  authenticationResult = await mediator.Send(command);
+        var command = _mapper.Map<RegisterCommand>(request);
+        ErrorOr<AuthenticationResult> authenticationResult = await mediator.Send(command);
 
-return authenticationResult.MatchFirst(
+        // return authenticationResult.MatchFirst(
+        //             result => Ok(_mapper.Map<AuthenticationResponse>(result)),
+        //              firtError => Problem(statusCode: StatusCodes.Status409Conflict, 
+        //                      title: firtError.Description)
+        //         );
+      return authenticationResult.Match(
             result => Ok(_mapper.Map<AuthenticationResponse>(result)),
-             firtError => Problem(statusCode: StatusCodes.Status409Conflict, 
-                     title: firtError.Description)
+            errors => Problem(errors)
         );
         // if (authenticationResult.IsSuccess)
         // {
@@ -52,7 +56,7 @@ return authenticationResult.MatchFirst(
         //         title: "Email already exists");
         // }
         // return Problem();
-    // return authenticationResult.Match(
+        // return authenticationResult.Match(
         //     result => Ok(MapAuthResult(result)),
         //     error => Problem(statusCode: (int)error.StatusCode, 
         //              title: error.ErrorMessage)

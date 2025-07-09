@@ -3,34 +3,47 @@ using BuberDinner.Application.Common.Errors;
 using ErrorOr;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+
 
 namespace BuberDinner.Api.Controllers;
-[ApiController]
-public class ApiController : ControllerBase
+[ApiController]public class ApiController : ControllerBase
 {
-   
-    protected IActionResult Problem(List<Error> errors)
+    protected ActionResult Problem(List<Error> errors)
     {
-        HttpContext.Items[HttpContextItemKeys.Errors] = errors;
-        if (errors.Count == 0)
+        if (errors.Count is 0)
         {
             return Problem();
         }
 
-        var firstError = errors.First();
-        var statusCode = firstError.Type switch
+        if (errors.All(error => error.Type == ErrorType.Validation))
         {
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
+            return ValidationProblem(errors);
+        }
+
+        return Problem(errors[0]);
+    }
+
+    private ObjectResult Problem(Error error)
+    {
+        var statusCode = error.Type switch
+        {
             ErrorType.Conflict => StatusCodes.Status409Conflict,
+            ErrorType.Validation => StatusCodes.Status400BadRequest,
             ErrorType.NotFound => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status500InternalServerError
+            ErrorType.Unauthorized => StatusCodes.Status403Forbidden,
+            _ => StatusCodes.Status500InternalServerError,
         };
 
-        return Problem(
-            statusCode: statusCode,
-            title: firstError.Description);
-        
-        // Alternatively, you can return a default problem response
-       // return Problem();
+        return Problem(statusCode: statusCode, title: error.Description);
+    }
+
+    private ActionResult ValidationProblem(List<Error> errors)
+    {
+        var modelStateDictionary = new ModelStateDictionary();
+
+        errors.ForEach(error => modelStateDictionary.AddModelError(error.Code, error.Description));
+
+        return ValidationProblem(modelStateDictionary);
     }
 }

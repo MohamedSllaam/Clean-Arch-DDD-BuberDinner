@@ -10,27 +10,29 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.
-AddPresentation()
-.AddApplication()
-.AddInfrastructure(builder.Configuration);
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    builder.Services.
+    AddPresentation()
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
 }
-//app.UseMiddleware<ErrorHandlingMiddleware>();  
-app.UseExceptionHandler("/error");  
-// app.Map("/error", (HttpContext context) =>
-// {
-//     Exception? exception = context.Features.Get<IExceptionHandlerFeature>()?.Error; 
-//     return Results.Problem();
-// });     
-app.UseHttpsRedirection();
-app.MapControllers();
+var app = builder.Build();
+{
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+    }
+    //app.UseMiddleware<ErrorHandlingMiddleware>();  
+    app.UseExceptionHandler("/error");
+    // app.Map("/error", (HttpContext context) =>
+    // {
+    //     Exception? exception = context.Features.Get<IExceptionHandlerFeature>()?.Error; 
+    //     return Results.Problem();
+    // });     
+    app.UseHttpsRedirection();
+    app.MapControllers();
 
-app.Run();
+    app.Run();
 
+}

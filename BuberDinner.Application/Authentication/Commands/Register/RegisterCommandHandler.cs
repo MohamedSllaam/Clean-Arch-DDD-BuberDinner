@@ -5,7 +5,7 @@ using BuberDinner.Domain.Entites;
 using ErrorOr;
 using MediatR;
 using BuberDinner.Application.Authentication.Common;
-namespace BuberDinner.Application.Authentication.Commands
+namespace BuberDinner.Application.Authentication.Commands.Register
 {
      
  public class RegisterCommandHandler(IJwtTokenGenerator _jwtTokenGenerator , IUserRepository _userRepository) : IRequestHandler<RegisterCommand, ErrorOr<AuthenticationResult>>
@@ -13,7 +13,7 @@ namespace BuberDinner.Application.Authentication.Commands
 
         public async Task<ErrorOr<AuthenticationResult>> Handle(RegisterCommand command, CancellationToken cancellationToken)
         {
-        
+             await Task.CompletedTask; // Simulate async operation if needed
 
             if (_userRepository.GetUserByEmail(command.Email) is not null)
             {

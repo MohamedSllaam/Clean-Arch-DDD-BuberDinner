@@ -1,7 +1,7 @@
 using ErrorOr;
 using MediatR;
 using BuberDinner.Application.Authentication.Common;
-namespace BuberDinner.Application.Authentication.Commands
+namespace BuberDinner.Application.Authentication.Commands.Register
 {
     public record RegisterCommand
     (
