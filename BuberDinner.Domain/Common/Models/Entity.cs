@@ -1,42 +1,58 @@
-namespace BuberDinner.Domain.Common.Models
+namespace BuberDinner.Domain.Common.Models;
+
+public abstract class Entity<TId> : IEquatable<Entity<TId>>, IHasDomainEvents
+    where TId : notnull
 {
-    public class Entity<TId> :IEquatable<Entity<TId>>
-        where TId : notnull
+    private readonly List<IDomainEvent> _domainEvents = new();
+
+    public TId Id { get; protected set; }
+
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    protected Entity(TId id)
     {
-        public TId Id { get; protected set; } = default!;
-
-        protected Entity(TId id)
-        {
-            Id = id;
-        }
-        public override bool Equals(object? obj)
-        {
-            return obj is Entity<TId> entity && Equals(entity);
-        }
-
-        public bool Equals(Entity<TId>? other)
-        {
-            return Equals((object?)other);
-            // if (other is null) return false;
-            // if (ReferenceEquals(this, other)) return true;
-            // return EqualityComparer<TId>.Default.Equals(Id, other.Id);
-        }
-
-        public static bool operator ==(Entity<TId> left, Entity<TId> right)
-        {
-            if (left is null && right is null) return true;
-            if (left is null || right is null) return false;
-            return left.Equals(right);
-        }
-        public static bool operator !=(Entity<TId> left, Entity<TId> right)
-        {
-            return !(left == right);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id is not null ? Id.GetHashCode() : 0;
-        }
+        Id = id;
     }
-   
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Entity<TId> entity && Id.Equals(entity.Id);
+    }
+
+    public bool Equals(Entity<TId>? other)
+    {
+        return Equals((object?)other);
+    }
+
+    public static bool operator ==(Entity<TId> left, Entity<TId> right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(Entity<TId> left, Entity<TId> right)
+    {
+        return !Equals(left, right);
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+
+    public void AddDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+#pragma warning disable CS8618
+
+    protected Entity() { }
+
+#pragma warning restore CS8618
 }
+    

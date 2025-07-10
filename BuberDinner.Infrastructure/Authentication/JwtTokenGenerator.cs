@@ -7,7 +7,8 @@ using Microsoft.VisualBasic;
 using Microsoft.Extensions.Configuration;
 using BuberDinner.Application.Common.InterFaces.Services;
 using Microsoft.Extensions.Options;
-using BuberDinner.Domain.Entites;
+using BuberDinner.Domain.User;
+
 
 namespace BuberDinner.Infrastructure.Authentication
 {

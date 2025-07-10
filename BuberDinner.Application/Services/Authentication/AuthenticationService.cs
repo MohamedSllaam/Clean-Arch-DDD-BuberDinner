@@ -1,10 +1,10 @@
 using BuberDinner.Domain.Common.Errors;
 using BuberDinner.Application.Common.InterFaces.Authentication;
 using BuberDinner.Application.Common.InterFaces.Presistence;
-using BuberDinner.Domain.Entites;
 using ErrorOr;
 using FluentResults;
 using BuberDinner.Application.Authentication.Common;
+using BuberDinner.Domain.User;
 
 namespace BuberDinner.Application.Authentication
 {
@@ -47,14 +47,12 @@ namespace BuberDinner.Application.Authentication
                 //   return Result.Fail<AuthenticationResult>(new[] { new DuplicateEmailError() });  
               return  Errors.User.DuplicateEmail;
             }
-            var user = new  User
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                Password = password // In a real application, you should hash the password
-            };
-
+            var user =   User.Create(
+                firstName,
+                lastName,
+                email,
+                password);
+                
             _userRepository.AddUser(user);  
 
             // Here you would typically create a new user in the database

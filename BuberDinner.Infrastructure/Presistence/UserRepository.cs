@@ -1,5 +1,6 @@
 using BuberDinner.Application.Common.InterFaces.Presistence;
-using BuberDinner.Domain.Entites;
+using BuberDinner.Domain.User;
+using BuberDinner.Domain.User.ValueObjects;
 
 namespace BuberDinner.Infrastructure.Presistence
 {
@@ -17,7 +18,7 @@ namespace BuberDinner.Infrastructure.Presistence
   public User? GetUserByEmail(string email)
   {
             // This is a mock implementation. In a real application, you would query a database.
-            return _users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));   
+       return _users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));   
   }
  }
 }

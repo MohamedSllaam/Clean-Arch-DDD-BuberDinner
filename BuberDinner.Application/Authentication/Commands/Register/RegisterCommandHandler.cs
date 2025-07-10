@@ -1,10 +1,10 @@
 using BuberDinner.Application.Common.InterFaces.Authentication;
 using BuberDinner.Application.Common.InterFaces.Presistence;
 using BuberDinner.Domain.Common.Errors;
-using BuberDinner.Domain.Entites;
 using ErrorOr;
 using MediatR;
 using BuberDinner.Application.Authentication.Common;
+using BuberDinner.Domain.User;
 namespace BuberDinner.Application.Authentication.Commands.Register
 {
      
@@ -21,13 +21,11 @@ namespace BuberDinner.Application.Authentication.Commands.Register
                 return Errors.User.DuplicateEmail;
             }
 
-            var user = new User
-            {
-                FirstName = command.FirstName,
-                LastName = command.LastName,
-                Email = command.Email,
-                Password = command.Password // In a real application, you should hash the password
-            };
+            var user = User.Create(
+            command.FirstName,
+            command.LastName,
+            command.Email,
+            command.Password);
 
             _userRepository.AddUser(user);
 

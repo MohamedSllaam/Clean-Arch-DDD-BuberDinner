@@ -4,6 +4,7 @@ using ErrorOr;
 using MediatR;
 using BuberDinner.Domain.Common.Errors;
 using BuberDinner.Application.Authentication.Common;
+using BuberDinner.Domain.User;
 
 namespace BuberDinner.Application.Authentication.Queries.Login
 {
@@ -13,7 +14,7 @@ namespace BuberDinner.Application.Authentication.Queries.Login
         {
             await Task.CompletedTask; // Simulate async operation if needed
             // Check if the user exists
-            if (_userRepository.GetUserByEmail(request.Email) is not Domain.Entites.User user)
+            if (_userRepository.GetUserByEmail(request.Email) is not User user)
             {
                 return Errors.Authentication.InvalidCredentials;
                 // Alternatively, you could throw an exception or return a specific error.

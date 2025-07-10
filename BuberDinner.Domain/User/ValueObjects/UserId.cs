@@ -1,22 +1,22 @@
 using BuberDinner.Domain.Common.Models;
 
-namespace BuberDinner.Domain.Menu.ValueObjects;
+namespace BuberDinner.Domain.User.ValueObjects;
 
-public sealed class MenuId : AggregateRootId<Guid>
+public sealed class UserId : AggregateRootId<Guid>
 {
     public override Guid Value { get; protected set; }
 
-    private MenuId(Guid value)
+    private UserId(Guid value)
     {
         Value = value;
     }
 
-    public static MenuId CreateUnique()
+    public static UserId CreateUnique()
     {
         return new(Guid.NewGuid());
     }
 
-    public static MenuId Create(Guid value)
+    public static UserId Create(Guid value)
     {
         return new(value);
     }
@@ -26,5 +26,6 @@ public sealed class MenuId : AggregateRootId<Guid>
         yield return Value;
     }
 
-    private MenuId() { }
+    public static implicit operator Guid(UserId data)
+        => data.Value;
 }

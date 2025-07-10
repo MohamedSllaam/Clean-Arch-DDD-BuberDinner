@@ -1,21 +1,22 @@
 using BuberDinner.Domain.Common.Models;
 
-namespace BuberDinner.Domain.Menu.ValueObjects;
+namespace BuberDinner.Domain.Dinner.ValueObjects;
 
-public sealed class MenuItemId : ValueObject
+public sealed class ReservationId : ValueObject
 {
     public Guid Value { get; }
 
-    private MenuItemId(Guid value)
+    private ReservationId(Guid value)
     {
         Value = value;
     }
 
-    public static MenuItemId CreateUnique()
+    public static ReservationId CreateUnique()
     {
         return new(Guid.NewGuid());
     }
-    public static MenuItemId Create(Guid value)
+
+    public static ReservationId Create(Guid value)
     {
         return new(value);
     }
@@ -24,6 +25,4 @@ public sealed class MenuItemId : ValueObject
     {
         yield return Value;
     }
-
-    private MenuItemId() { }
 }
