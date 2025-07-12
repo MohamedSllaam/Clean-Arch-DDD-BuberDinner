@@ -18,16 +18,23 @@ namespace BuberDinner.Infrastructure
 
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configurationManager)
         {
-            services.AddAuth(configurationManager);
+            services
+            .AddAuth(configurationManager)
+            .AddPersistance();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-            services.AddSingleton<IUserRepository, UserRepository>();
+
             // Register your infrastructure services here
             // For example, you might register a database context or external API clients
 
             return services;
         }
 
-
+        public static IServiceCollection AddPersistance(this IServiceCollection services)
+        {
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMenuRepository, MenuRepository>(); 
+            return services;
+         }
         public static IServiceCollection AddAuth(this IServiceCollection services, ConfigurationManager configurationManager)
         {
             // Register your API controllers, filters, and other presentation layer components here

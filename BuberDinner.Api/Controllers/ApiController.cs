@@ -1,13 +1,17 @@
 using BuberDinner.Api.Http;
 using BuberDinner.Application.Common.Errors;
 using ErrorOr;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 
 namespace BuberDinner.Api.Controllers;
-[ApiController]public class ApiController : ControllerBase
+
+[ApiController]
+[Authorize]
+public class ApiController : ControllerBase
 {
     protected ActionResult Problem(List<Error> errors)
     {

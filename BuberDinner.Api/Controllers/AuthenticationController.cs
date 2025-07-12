@@ -8,12 +8,14 @@ using BuberDinner.Contracts.Authentication;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace BuberDinner.Api.Controllers;
 
 [Route("auth")]
+[AllowAnonymous]
 //[ErrorHandlingExceptionFilter]
 public class AuthenticationController : ApiController
 {
@@ -26,6 +28,7 @@ public class AuthenticationController : ApiController
    this.mediator = mediator;
     _mapper = mapper;
  }
+
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(
