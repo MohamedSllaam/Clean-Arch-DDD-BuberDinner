@@ -11,7 +11,7 @@ public class MenusController(IMapper _mapper , ISender _sender) : ApiController
 {
     // Example action method
     [HttpPost]
-    public async Task<IActionResult> CreateMenu(CreateMenuRequest request, string hostId)
+    public async Task<IActionResult> CreateMenu(CreateMenuRequest request, Guid hostId)
     {
            var command = _mapper.Map<CreateMenuCommand>((request, hostId));
            var result  = await _sender.Send(command);
