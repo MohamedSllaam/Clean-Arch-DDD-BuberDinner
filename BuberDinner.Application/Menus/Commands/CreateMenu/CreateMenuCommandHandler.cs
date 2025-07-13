@@ -17,23 +17,18 @@ namespace BuberDinner.Application.Menus.Commands.CreateMenu
             // For example, check if the HostId exists or if the name is valid
     // Here you would typically interact with your repository or service to create the menu
             // For example:
-            var menu =  Menu.Create(
+             
+       
+    var menu = Menu.Create(
      hostId: HostId.Create(request.HostId),
      name: request.Name,
      description: request.Description,
-     sections:  request.Sections.ConvertAll(section => 
-        MenuSection.Create(
-          section.Name, 
-          section.Description,
-          section.Items
-          .ConvertAll(item =>
-          MenuItem.Create(
-            item.Name,
-           item.Description)
-           ).ToList()
-        )
-      ).ToList()
-    );
+     sections: request.Sections.ConvertAll(sections => MenuSection.Create(
+         name: sections.Name,
+         description: sections.Description,
+         items: sections.Items.ConvertAll(items => MenuItem.Create(
+             name: items.Name,
+             description: items.Description)))));
     
     _menuRepository.Add(menu);
             return  menu;

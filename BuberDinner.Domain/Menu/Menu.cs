@@ -9,6 +9,7 @@ using BuberDinner.Domain.Menu.Events;
 
 namespace BuberDinner.Domain.Menu;
 
+ 
 public sealed class Menu : AggregateRoot<MenuId, Guid>
 {
     private readonly List<MenuSection> _sections = new();
@@ -33,7 +34,7 @@ public sealed class Menu : AggregateRoot<MenuId, Guid>
         string name,
         string description,
         AverageRating averageRating,
-        List<MenuSection> sections)
+        List<MenuSection>? sections)
         : base(menuId)
     {
         HostId = hostId;

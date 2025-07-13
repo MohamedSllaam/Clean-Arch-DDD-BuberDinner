@@ -7,17 +7,19 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace BuberDinner.Api.Controllers;
 [Route("hosts/{hostId}/menus")]
-public class MenusController(IMapper _mapper , ISender _sender) : ApiController
+public class MenusController(IMapper _mapper , ISender _mediator) : ApiController
 {
     // Example action method
-    [HttpPost]
-    public async Task<IActionResult> CreateMenu(CreateMenuRequest request, Guid hostId)
-    {
-           var command = _mapper.Map<CreateMenuCommand>((request, hostId));
-           var result  = await _sender.Send(command);
-            
-           return result.Match(
-              menu => Ok(_mapper.Map<MenuResponse>(menu)),
-              errors => Problem(errors));    
-    } 
+     [HttpPost]
+  public async Task<IActionResult> CreateMenu(
+      CreateMenuRequest request,
+      Guid hostId)
+  {
+      var command = _mapper.Map<CreateMenuCommand>((request, hostId));
+
+      var createMenuResult = await _mediator.Send(command);
+      return createMenuResult.Match(
+          menu => Ok(_mapper.Map<MenuResponse>(menu)),
+          errors => Problem(errors));
+  }
 } 
