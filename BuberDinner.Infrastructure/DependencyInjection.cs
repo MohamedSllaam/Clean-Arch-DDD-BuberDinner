@@ -1,9 +1,9 @@
-using System.Text;
 using BuberDinner.Application.Common.InterFaces.Authentication;
 using BuberDinner.Application.Common.InterFaces.Presistence;
 using BuberDinner.Application.Common.InterFaces.Services;
 using BuberDinner.Infrastructure.Authentication;
 using BuberDinner.Infrastructure.Persistence;
+using BuberDinner.Infrastructure.Persistence.Interceptors;
 using BuberDinner.Infrastructure.Presistence;
 using BuberDinner.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,7 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BuberDinner.Infrastructure
 {
@@ -22,7 +24,7 @@ namespace BuberDinner.Infrastructure
         {
             services
             .AddAuth(configurationManager)
-            .AddPersistance();
+            .AddPersistance(configurationManager);
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             // Register your infrastructure services here
@@ -31,14 +33,15 @@ namespace BuberDinner.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddPersistance(this IServiceCollection services)
+        public static IServiceCollection AddPersistance(this IServiceCollection services, ConfigurationManager configurationManager )
         {
  services.AddDbContext<BuberDinnerDbContext>(options =>
-     options.UseSqlServer("Server=sql-data;Database=BuberDinner;User Id=sa;Password=amiko123!;TrustServerCertificate=True"));
+     options.UseSqlServer(configurationManager.GetConnectionString("Database")!));
 
 
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IMenuRepository, MenuRepository>(); 
+            services.AddScoped<IMenuRepository, MenuRepository>();
+            services.AddScoped<PublishDomainEventsInterceptor>();
             return services;
          }
         public static IServiceCollection AddAuth(this IServiceCollection services, ConfigurationManager configurationManager)

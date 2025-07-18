@@ -92,6 +92,7 @@ internal sealed class MenuConfigurations : IEntityTypeConfiguration<Menu>
             .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 
+
     private static void ConfigureMenuItemsTable(OwnedNavigationBuilder<MenuSection, MenuItem> itemBuilder)
     {
         itemBuilder.ToTable("MenuItems");
